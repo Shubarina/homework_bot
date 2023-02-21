@@ -49,7 +49,7 @@ def send_message(bot, message):
         bot.send_message(TELEGRAM_CHAT_ID, text)
         logging.debug('Сообщение отправлено')
     except Exception as error:
-        logging.error('Сбой при отправке сообщения: {error}')
+        logging.error(f'Сбой при отправке сообщения: {error}')
 
 
 def get_api_answer(timestamp) -> dict:
