@@ -31,10 +31,10 @@ logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s, %(levelname)s, %(message)s',
     stream=sys.stdout
-    )
+)
 
 
-def check_tokens():
+def check_tokens() -> bool:
     """Проверка наличия и доступности переменных окружения."""
     CHECK_LIST = (PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID)
     result = all(CHECK_LIST)
@@ -48,12 +48,11 @@ def send_message(bot, message):
         text = message
         bot.send_message(TELEGRAM_CHAT_ID, text)
         logging.debug('Сообщение отправлено')
-    except:
-        logging.error('Сбой при отправке сообщения')
-        raise Exception('Сбой при отправке сообщения')
+    except Exception as error:
+        logging.error('Сбой при отправке сообщения: {error}')
 
 
-def get_api_answer(timestamp):
+def get_api_answer(timestamp) -> dict:
     """Делаем запрос к API домашки."""
     try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=timestamp)
@@ -64,7 +63,7 @@ def get_api_answer(timestamp):
         logging.error('Сбой при запросе к эндпоинту')
 
 
-def check_response(response):
+def check_response(response) -> dict:
     """Проверяем ответ API на соответствие."""
     logging.error('Ошибка при проверке ответа API')
     if (type(response)) is not dict:
@@ -77,7 +76,7 @@ def check_response(response):
     return homework[0]
 
 
-def parse_status(homework):
+def parse_status(homework) -> str:
     """Получаем статус домашки и готовим сообщение для бота."""
     logging.error('В ответе API домашки нет ключей')
     if 'homework_name' not in homework:
