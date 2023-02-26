@@ -56,7 +56,9 @@ def get_api_answer(timestamp: dict[str, int]) -> dict:
     try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=timestamp)
         if response.status_code != HTTPStatus.OK:
-            raise requests.HTTPError(f'API домашки вернул статус {response.status_code}')
+            raise requests.HTTPError(
+                f'API домашки вернул статус {response.status_code}'
+            )
         return response.json()
     except requests.RequestException():
         logging.error('Сбой при запросе к эндпоинту')
@@ -121,4 +123,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
