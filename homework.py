@@ -42,41 +42,40 @@ def check_tokens() -> bool:
     return result
 
 
-def send_message(bot, message):
+def send_message(bot: telegram.bot.Bot, message: str) -> None:
     """Бот посылает сообщение о статусе домашки в чат."""
     try:
-        text = message
-        bot.send_message(TELEGRAM_CHAT_ID, text)
+        bot.send_message(TELEGRAM_CHAT_ID, text=message)
         logging.debug('Сообщение отправлено')
-    except Exception as error:
-        logging.error(f'Сбой при отправке сообщения: {error}')
+    except telegram.TelegramError:
+        logging.error('Сбой при отправке сообщения')
 
 
-def get_api_answer(timestamp) -> dict:
+def get_api_answer(timestamp: dict[str, int]) -> dict:
     """Делаем запрос к API домашки."""
     try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=timestamp)
         if response.status_code != HTTPStatus.OK:
-            raise requests.HTTPError('API домашки вернул плохой статус')
+            raise requests.HTTPError(f'API домашки вернул статус {response.status_code}')
         return response.json()
-    except requests.RequestException('Сбой при запросе к эндпоинту'):
+    except requests.RequestException():
         logging.error('Сбой при запросе к эндпоинту')
 
 
-def check_response(response) -> dict:
+def check_response(response: dict[str, str]) -> dict:
     """Проверяем ответ API на соответствие."""
     logging.error('Ошибка при проверке ответа API')
-    if (type(response)) is not dict:
-        raise TypeError('Тип ответа не соответствует документации')
-    homework = response.get('homeworks')
-    if (type(homework)) is not list:
+    if not isinstance(response, dict):
         raise TypeError('Тип ответа не соответствует документации')
     if 'homeworks' not in response:
         raise KeyError('В словаре ответа отсутствует ключ к домашке')
+    homework = response.get('homeworks')
+    if not isinstance(homework, list):
+        raise TypeError('Тип ответа не соответствует документации')
     return homework[0]
 
 
-def parse_status(homework) -> str:
+def parse_status(homework: dict[str, str]) -> str:
     """Получаем статус домашки и готовим сообщение для бота."""
     logging.error('В ответе API домашки нет ключей')
     if 'homework_name' not in homework:
@@ -100,7 +99,7 @@ def main():
         try:
             if check_tokens() is False:
                 logging.critical('Переменные окружения недоступны')
-                raise SystemExit('Переменные окружения недоступны')
+                sys.exit()
             else:
                 response = get_api_answer(timestamp)
                 homework = check_response(response)
@@ -122,3 +121,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
