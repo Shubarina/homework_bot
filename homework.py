@@ -56,16 +56,14 @@ def get_api_answer(timestamp: dict[str, int]) -> dict:
     try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=timestamp)
         if response.status_code != HTTPStatus.OK:
-            raise requests.HTTPError(
-                f'API домашки вернул статус {response.status_code}'
-            )
+            raise requests.HTTPError('API домашки вернул не тот статус')
         return response.json()
     except requests.RequestException():
         logging.error('Сбой при запросе к эндпоинту')
 
 
 def check_response(response: dict[str, str]) -> dict:
-    """Проверяем ответ API на соответствие."""
+    """Проверяем ответ API на соответствие документации."""
     logging.error('Ошибка при проверке ответа API')
     if not isinstance(response, dict):
         raise TypeError('Тип ответа не соответствует документации')
