@@ -5,6 +5,7 @@ import sys
 import telegram
 import time
 
+from typing import Dict, Optional
 from dotenv import load_dotenv
 from http import HTTPStatus
 
@@ -34,7 +35,7 @@ logging.basicConfig(
 )
 
 
-def check_tokens() -> bool:
+def check_tokens() -> Optional[bool]:
     """Проверка наличия и доступности переменных окружения."""
     CHECK_LIST = (PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID)
     result = all(CHECK_LIST)
@@ -42,7 +43,7 @@ def check_tokens() -> bool:
     return result
 
 
-def send_message(bot: telegram.bot.Bot, message: str) -> None:
+def send_message(bot: Optional[telegram.bot.Bot], message: Optional[str]) -> None:
     """Бот посылает сообщение о статусе домашки в чат."""
     try:
         bot.send_message(TELEGRAM_CHAT_ID, text=message)
@@ -51,7 +52,7 @@ def send_message(bot: telegram.bot.Bot, message: str) -> None:
         logging.error('Сбой при отправке сообщения')
 
 
-def get_api_answer(timestamp: dict[str, int]) -> dict:
+def get_api_answer(timestamp: Dict[str, int]) -> Dict:
     """Делаем запрос к API домашки."""
     try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=timestamp)
@@ -62,7 +63,7 @@ def get_api_answer(timestamp: dict[str, int]) -> dict:
         logging.error('Сбой при запросе к эндпоинту')
 
 
-def check_response(response: dict[str, str]) -> dict:
+def check_response(response: Dict[str, str]) -> Dict:
     """Проверяем ответ API на соответствие документации."""
     logging.error('Ошибка при проверке ответа API')
     if not isinstance(response, dict):
@@ -75,7 +76,7 @@ def check_response(response: dict[str, str]) -> dict:
     return homework[0]
 
 
-def parse_status(homework: dict[str, str]) -> str:
+def parse_status(homework: Dict[str, str]) -> Optional[str]:
     """Получаем статус домашки и готовим сообщение для бота."""
     logging.error('В ответе API домашки нет ключей')
     if 'homework_name' not in homework:
