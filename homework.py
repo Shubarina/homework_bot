@@ -43,7 +43,8 @@ def check_tokens() -> Optional[bool]:
     return result
 
 
-def send_message(bot: Optional[telegram.bot.Bot], message: Optional[str]) -> None:
+def send_message(
+        bot: Optional[telegram.bot.Bot], message: Optional[str]) -> None:
     """Бот посылает сообщение о статусе домашки в чат."""
     try:
         bot.send_message(TELEGRAM_CHAT_ID, text=message)
