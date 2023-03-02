@@ -101,13 +101,13 @@ def main():
         try:
             if check_tokens() is False:
                 logging.critical('Переменные окружения недоступны')
-                sys.exit()
+                sys.exit('Нет переменной окружения, бот прекратил работу')
             else:
                 response = get_api_answer(timestamp)
                 homework = check_response(response)
                 status = homework.get('status')
                 if status != hw_status:
-                    hw_status == status
+                    hw_status = status
                     message = parse_status(homework)
                     send_message(bot, message)
                     logging.error('Сбой при отправке сообщения')
@@ -118,7 +118,7 @@ def main():
             logging.error(f'Сбой в работе программы {error}')
             message = f'Сбой в работе программы: {error}'
             send_message(bot, message)
-        time.sleep(600)
+        time.sleep(RETRY_PERIOD)
 
 
 if __name__ == '__main__':
